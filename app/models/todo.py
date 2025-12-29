@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from sqlalchemy import String, Integer, Text, ForeignKey, UniqueConstraint
+from sqlalchemy import String, Integer, Text, ForeignKey, UniqueConstraint, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
+from enum import Enum
 
+class RecurrenceType(str, Enum):
+    NONE = "none"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
 
 class Todo(Base):
     __tablename__ = "todos"
@@ -13,7 +18,11 @@ class Todo(Base):
     title: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[str] = mapped_column(Text, nullable=False)
 
-    recurrence_type: Mapped[str] = mapped_column(String, nullable=False, default="none")  # none|weekly|monthly
+    recurrence_type: Mapped[RecurrenceType] = mapped_column(
+        SAEnum(RecurrenceType, name="recurrence_type"),
+        nullable=False,
+        default=RecurrenceType.NONE,
+    )
     interval: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     start_date: Mapped[str | None] = mapped_column(Text, nullable=True)
 
