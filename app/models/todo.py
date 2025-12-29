@@ -1,15 +1,20 @@
 from __future__ import annotations
 
-from sqlalchemy import String, Integer, Text, ForeignKey, UniqueConstraint, Enum as SAEnum
+from datetime import date
+from enum import Enum
+
+from sqlalchemy import Date, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
-from enum import Enum
+
 
 class RecurrenceType(str, Enum):
     NONE = "none"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
+
 
 class Todo(Base):
     __tablename__ = "todos"
@@ -24,10 +29,10 @@ class Todo(Base):
         default=RecurrenceType.NONE,
     )
     interval: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    start_date: Mapped[str | None] = mapped_column(Text, nullable=True)
+    start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     is_completed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    completed_at: Mapped[str | None] = mapped_column(Text, nullable=True)
+    completed_at: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     completions: Mapped[list["TodoCompletion"]] = relationship(
         back_populates="todo",
@@ -37,14 +42,16 @@ class Todo(Base):
 
 class TodoCompletion(Base):
     __tablename__ = "todo_completions"
-    __table_args__ = (
-        UniqueConstraint("todo_id", "period_key", name="uq_todo_period"),
-    )
+    __table_args__ = (UniqueConstraint("todo_id", "period_key", name="uq_todo_period"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    todo_id: Mapped[int] = mapped_column(ForeignKey("todos.id", ondelete="CASCADE"), nullable=False)
+    todo_id: Mapped[int] = mapped_column(
+        ForeignKey("todos.id", ondelete="CASCADE"), nullable=False
+    )
 
-    period_key: Mapped[str | None] = mapped_column(String, nullable=True)  # '2026-W01', '2026-01', NULL for one-time
+    period_key: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )  # '2026-W01', '2026-01', NULL for one-time
     completed_at: Mapped[str] = mapped_column(Text, nullable=False)
 
     todo: Mapped[Todo] = relationship(back_populates="completions")

@@ -7,6 +7,14 @@ from app.models.todo import Todo, RecurrenceType
 from app.schemas.todo import TodoCreate
 
 
+def validate_start_date(start_date):
+    if start_date is None:
+        return
+
+    today = datetime.now(timezone.utc).date()
+    if start_date < today:
+        raise TodoValidationError("start_date cannot be in the past")
+
 class TodoValidationError(ValueError):
     pass
 
@@ -18,6 +26,9 @@ class TodoService:
     def create(self, payload: TodoCreate) -> Todo:
         if payload.recurrence_type != RecurrenceType.NONE and not payload.start_date:
             raise TodoValidationError("start_date is required for recurring todos")
+
+        if payload.start_date:
+            payload.start_date = validate_start_date(payload.start_date)
 
         now = datetime.now(timezone.utc).isoformat()
 
@@ -34,3 +45,4 @@ class TodoService:
         self.db.add(todo)
         self.db.flush()
         return todo
+
