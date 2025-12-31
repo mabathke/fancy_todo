@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
@@ -13,14 +14,21 @@ def list_todos(
     db: Session = Depends(get_db),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
+    is_completed: Optional[bool] = Query(
+        None,
+        description="Filter by completion status. true = completed, false = open"
+    ),
 ):
-    base_q = db.query(Todo)
+    query = db.query(Todo)
 
-    total = base_q.count()
+    if is_completed is not None:
+        query = query.filter(Todo.is_completed == is_completed)
+    
+    total = query.count()
     skip = (page - 1) * page_size
 
     todos = (
-        base_q
+        query
         .order_by(Todo.created_at.desc())
         .offset(skip)
         .limit(page_size)
