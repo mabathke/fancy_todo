@@ -84,25 +84,17 @@ def create_todo(payload: TodoCreate, db: Session = Depends(get_db)):
 
 @router.patch("/{todo_id}/complete", response_model=TodoOut)
 def complete_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
-    if not todo:
-        raise HTTPException(status_code=404, detail="Todo not found")
-
-    todo.is_completed = True
-    todo.completed_at = date.today()
-    db.commit()
-    db.refresh(todo)
-    return todo
+    service = TodoService(db)
+    try:
+        return service.complete(todo_id)
+    except TodoValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.patch("/{todo_id}/uncomplete", response_model=TodoOut)
 def uncomplete_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
-    if not todo:
-        raise HTTPException(status_code=404, detail="Todo not found")
-
-    todo.is_completed = False
-    todo.completed_at = None
-    db.commit()
-    db.refresh(todo)
-    return todo
+    service = TodoService(db)
+    try:
+        return service.uncomplete(todo_id)
+    except TodoValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))

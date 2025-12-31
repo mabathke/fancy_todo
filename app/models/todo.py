@@ -52,6 +52,6 @@ class TodoCompletion(Base):
     period_key: Mapped[str | None] = mapped_column(
         String, nullable=True
     )  # '2026-W01', '2026-01', NULL for one-time
-    completed_at: Mapped[str] = mapped_column(Text, nullable=False)
+    completed_at: Mapped[date] = mapped_column(Date, nullable=False)
 
     todo: Mapped[Todo] = relationship(back_populates="completions")
