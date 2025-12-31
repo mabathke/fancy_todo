@@ -43,6 +43,7 @@ class TodoService:
         )
 
         self.db.add(todo)
-        self.db.flush()
+        self.db.commit()
+        self.db.refresh(todo)
         return todo
 
