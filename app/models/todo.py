@@ -22,7 +22,8 @@ class Todo(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[date] = mapped_column(Date, nullable=False)
-
+    due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    
     recurrence_type: Mapped[RecurrenceType] = mapped_column(
         SAEnum(RecurrenceType, name="recurrence_type"),
         nullable=False,
@@ -50,8 +51,8 @@ class TodoCompletion(Base):
     )
 
     period_key: Mapped[str | None] = mapped_column(
-        String, nullable=True
-    )  # '2026-W01', '2026-01', NULL for one-time
-    completed_at: Mapped[date] = mapped_column(Text, nullable=False)
+        String, nullable=False
+    )  # '2026-W01', '2026-01', one-time for one-time
+    completed_at: Mapped[date] = mapped_column(Date, nullable=False)
 
     todo: Mapped[Todo] = relationship(back_populates="completions")

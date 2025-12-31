@@ -44,16 +44,17 @@ class TodoService:
 
         validate_start_date(payload.start_date)
 
-        now = datetime.now(timezone.utc).isoformat()
-
+        today = datetime.now(timezone.utc).date()
+        
         todo = Todo(
             title=payload.title.strip(),
-            created_at=now,
+            created_at=today,
             recurrence_type=payload.recurrence_type,
             interval=payload.interval,
             start_date=payload.start_date,
             is_completed=0,
             completed_at=None,
+            due_date=None,
         )
 
         self.db.add(todo)

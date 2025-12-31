@@ -22,7 +22,7 @@ class TodoCreate(BaseModel):
 class TodoOut(BaseModel):
     id: int
     title: str
-    created_at: str
+    created_at: date
 
     recurrence_type: RecurrenceType
     interval: int

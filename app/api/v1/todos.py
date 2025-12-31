@@ -52,10 +52,12 @@ def list_todos(
                 "id": todo.id,
                 "title": todo.title,
                 "is_completed": bool(todo.is_completed),
+                "due_date": todo.due_date,
                 "recurrence_type": todo.recurrence_type,
                 "interval": todo.interval,
                 "start_date": todo.start_date,
                 "created_at": todo.created_at,
+                "completed_at": todo.completed_at,
             }
             for todo in todos
         ],
