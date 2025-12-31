@@ -1,5 +1,7 @@
+from datetime import date
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
@@ -78,3 +80,29 @@ def create_todo(payload: TodoCreate, db: Session = Depends(get_db)):
         is_completed=bool(todo.is_completed),
         completed_at=todo.completed_at,
     )
+    
+
+@router.patch("/{todo_id}/complete", response_model=TodoOut)
+def complete_todo(todo_id: int, db: Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+
+    todo.is_completed = True
+    todo.completed_at = date.today()
+    db.commit()
+    db.refresh(todo)
+    return todo
+
+
+@router.patch("/{todo_id}/uncomplete", response_model=TodoOut)
+def uncomplete_todo(todo_id: int, db: Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+
+    todo.is_completed = False
+    todo.completed_at = None
+    db.commit()
+    db.refresh(todo)
+    return todo
