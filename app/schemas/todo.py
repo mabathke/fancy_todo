@@ -15,7 +15,7 @@ class TodoCreate(BaseModel):
     start_date: date | None = Field(
         default=None,
         description="ISO date in YYYY-MM-DD",
-        examples=["2025-12-29"],
+        examples=["2028-12-29"],
     )
 
 
@@ -29,7 +29,7 @@ class TodoOut(BaseModel):
     start_date: date | None = Field(
         default=None,
         description="ISO date in YYYY-MM-DD",
-        examples=["2025-12-29"],
+        examples=["2028-12-29"],
     )
 
     is_completed: bool
