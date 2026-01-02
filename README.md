@@ -101,3 +101,13 @@ alembic upgrade head
 3. Review migration
 4. Upgrade database
 5. Run app
+
+
+## Nuke and Recreate Python environment
+```bash
+deactivate
+Remove-Item -Recurse -Force .venv
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```

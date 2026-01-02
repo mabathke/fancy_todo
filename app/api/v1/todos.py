@@ -7,12 +7,15 @@ from app.core.db import get_db
 from app.models.todo import Todo, TodoCompletion
 from app.schemas.todo import TodoCreate, TodoOut
 from app.services.todo_service import TodoService, TodoValidationError
+from app.models.user import User
+from app.api.v1.auth import get_current_user
 
 router = APIRouter(prefix="/v1/todos", tags=["todos"])
 
 @router.get("")
 def list_todos(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     is_completed: Optional[bool] = Query(
