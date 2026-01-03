@@ -21,6 +21,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 
     user = User(
         email=payload.email,
+        name= payload.name,
         hashed_password=hash_password(payload.password),
         is_active=True,
     )
@@ -33,7 +34,7 @@ def login(
     form: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
-    # OAuth2PasswordRequestForm uses "username" field. We'll treat it as email.
+    # OAuth2PasswordRequestForm uses "username" field, we will use an email for now
     user = db.query(User).filter(User.email == form.username).first()
     if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(
